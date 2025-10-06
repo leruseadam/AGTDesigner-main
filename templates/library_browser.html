@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+
+{% block title %}Product Library Browser{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/library_browser.css') }}?v={{ cache_bust if cache_bust else '1.0' }}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="library-header">
+                <h1>
+                    <i class="fas fa-database"></i> Product Library Browser
+                </h1>
+                <p>Browse and edit master strain data for all products in your library.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search and Filter Controls -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="search-filter-section">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search products by name, brand, or strain...">
+                            <div class="input-group-append">
+                                <button class="btn" type="button" id="searchBtn" title="Search">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn" id="filterAll">All Products</button>
+                            <button type="button" class="btn" id="filterFlower">Flower</button>
+                            <button type="button" class="btn" id="filterConcentrate">Concentrate</button>
+                            <button type="button" class="btn" id="filterEdible">Edible</button>
+                            <button type="button" class="btn" id="filterVape">Vape</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="stats-card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Total Products</h5>
+                    <h2 id="totalProducts">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Unique Strains</h5>
+                    <h2 id="uniqueStrains">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Unique Brands</h5>
+                    <h2 id="uniqueBrands">0</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stats-card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Products Needing Review</h5>
+                    <h2 id="needsReview">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="product-table-container">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Product Library</h5>
+                    <div>
+                        <button class="btn btn-success btn-sm" id="exportBtn" title="Export Data">
+                            <i class="fas fa-download"></i> Export Data
+                        </button>
+                        <button class="btn btn-primary btn-sm" id="refreshBtn" title="Refresh">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="productTable">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th>Product Name</th>
+                                    <th>Brand</th>
+                                    <th>Product Type</th>
+                                    <th>Strain</th>
+                                    <th>Lineage</th>
+                                    <th>THC/CBD</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTableBody">
+                                <!-- Products will be loaded here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <div>
+                            <span id="showingInfo">Showing 0 of 0 products</span>
+                        </div>
+                        <nav>
+                            <ul class="pagination pagination-sm mb-0" id="pagination">
+                                <!-- Pagination will be generated here -->
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editProductModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Product Data</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" id="editProductId">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editProductName">Product Name</label>
+                                <input type="text" class="form-control" id="editProductName" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editProductBrand">Brand</label>
+                                <input type="text" class="form-control" id="editProductBrand">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editProductType">Product Type</label>
+                                <select class="form-control" id="editProductType" required>
+                                    <option value="flower">Flower</option>
+                                    <option value="concentrate">Concentrate</option>
+                                    <option value="solventless concentrate">Solventless Concentrate</option>
+                                    <option value="edible (solid)">Edible (Solid)</option>
+                                    <option value="edible (liquid)">Edible (Liquid)</option>
+                                    <option value="tincture">Tincture</option>
+                                    <option value="topical">Topical</option>
+                                    <option value="capsule">Capsule</option>
+                                    <option value="vape cartridge">Vape Cartridge</option>
+                                    <option value="pre-roll">Pre-roll</option>
+                                    <option value="infused pre-roll">Infused Pre-roll</option>
+                                    <option value="rso/co2 tankers">RSO/CO2 Tankers</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editProductStrain">Strain</label>
+                                <input type="text" class="form-control" id="editProductStrain">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editLineage">Lineage</label>
+                                <select class="form-control" id="editLineage">
+                                    <option value="">Select Lineage</option>
+                                    <option value="SATIVA">Sativa</option>
+                                    <option value="INDICA">Indica</option>
+                                    <option value="HYBRID">Hybrid</option>
+                                    <option value="HYBRID/SATIVA">Hybrid/Sativa</option>
+                                    <option value="HYBRID/INDICA">Hybrid/Indica</option>
+                                    <option value="CBD">CBD</option>
+                                    <option value="MIXED">Mixed</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editPrice">Price</label>
+                                <input type="text" class="form-control" id="editPrice" placeholder="$0.00">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editTHCCBD">THC/CBD Content</label>
+                                <input type="text" class="form-control" id="editTHCCBD" placeholder="e.g., THC: 20% CBD: 2%">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="editDescription">Description</label>
+                                <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveProductBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Strain Analysis Modal -->
+<div class="modal fade" id="strainAnalysisModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Strain Analysis & Recommendations</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Current Strain Data</h6>
+                        <div id="currentStrainData">
+                            <!-- Current strain data will be displayed here -->
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Similar Products</h6>
+                        <div id="similarProducts">
+                            <!-- Similar products will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6>Recommendations</h6>
+                        <div id="strainRecommendations">
+                            <!-- Recommendations will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-success" id="applyRecommendationsBtn">Apply Recommendations</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Spinner -->
+<div id="loadingSpinner" class="text-center" style="display: none;">
+    <div class="spinner-border text-primary" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>
+    <p class="mt-2">Loading product library...</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/library_browser.js') }}"></script>
+{% endblock %} 

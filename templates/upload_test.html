@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Test - PythonAnywhere</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .upload-area { border: 2px dashed #ccc; padding: 40px; text-align: center; margin: 20px 0; }
+        .upload-area.dragover { border-color: #007bff; background-color: #f8f9fa; }
+        .status { margin: 20px 0; padding: 10px; border-radius: 5px; }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        input[type="file"] { margin: 10px; }
+    </style>
+</head>
+<body>
+    <h1>PythonAnywhere Upload Test</h1>
+    
+    <div class="upload-area" id="uploadArea">
+        <h3>Drop Excel file here or click to select</h3>
+        <input type="file" id="fileInput" accept=".xlsx" style="display: none;">
+        <button onclick="document.getElementById('fileInput').click()">Select File</button>
+    </div>
+    
+    <div id="status"></div>
+    
+    <div>
+        <h3>Test Routes:</h3>
+        <button onclick="testRoute('/upload')">Test /upload</button>
+        <button onclick="testRoute('/upload-simple')">Test /upload-simple</button>
+        <button onclick="testRoute('/api/status')">Test /api/status</button>
+    </div>
+    
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const statusDiv = document.getElementById('status');
+        
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+        
+        async function handleFile(file) {
+            showStatus('Uploading ' + file.name + '...', 'info');
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                // Try simple upload first
+                const response = await fetch('/upload-simple', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('Upload successful: ' + data.message, 'success');
+                } else {
+                    showStatus('Upload failed: ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('Upload error: ' + error.message, 'error');
+            }
+        }
+        
+        async function testRoute(route) {
+            showStatus('Testing ' + route + '...', 'info');
+            
+            try {
+                const response = await fetch(route);
+                const text = await response.text();
+                
+                if (response.ok) {
+                    showStatus(route + ' is working', 'success');
+                } else {
+                    showStatus(route + ' failed: ' + response.status + ' ' + text.substring(0, 100), 'error');
+                }
+            } catch (error) {
+                showStatus(route + ' error: ' + error.message, 'error');
+            }
+        }
+        
+        function showStatus(message, type) {
+            statusDiv.innerHTML = '<div class="status ' + type + '">' + message + '</div>';
+            console.log(type.toUpperCase() + ':', message);
+        }
+    </script>
+</body>
+</html>

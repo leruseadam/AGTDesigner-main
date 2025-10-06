@@ -1,0 +1,45 @@
+{
+  "timestamp": 1759046370.4662468,
+  "database_type": "sqlite",
+  "search_results": [
+    {
+      "query": "Blue Dream",
+      "results": 20,
+      "time_ms": 4.92,
+      "database_type": "sqlite"
+    },
+    {
+      "query": "OG Kush",
+      "results": 20,
+      "time_ms": 3.85,
+      "database_type": "sqlite"
+    },
+    {
+      "query": "Sour Diesel",
+      "results": 20,
+      "time_ms": 3.5,
+      "database_type": "sqlite"
+    },
+    {
+      "query": "Gelato",
+      "results": 20,
+      "time_ms": 6.19,
+      "database_type": "sqlite"
+    },
+    {
+      "query": "Wedding Cake",
+      "results": 20,
+      "time_ms": 3.49,
+      "database_type": "sqlite"
+    }
+  ],
+  "stats": {
+    "database_type": "sqlite",
+    "total_products": 10285,
+    "product_types": 19,
+    "strains": 3,
+    "vendors": 108,
+    "timestamp": "2025-09-28T00:59:30.466208"
+  },
+  "average_search_time_ms": 4.390000000000001
+}

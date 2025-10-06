@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Test with Real Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tag-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-item:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .tag-item.dragging {
+            opacity: 0.8;
+            transform: rotate(2deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .drag-handle {
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4facfe;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+            cursor: grab;
+            pointer-events: auto;
+            z-index: 100;
+            background: rgba(79, 172, 254, 0.2);
+            border-radius: 4px;
+            padding: 4px;
+            border: 2px solid #4facfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-handle:hover {
+            opacity: 1;
+            background: rgba(79, 172, 254, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .tag-content {
+            margin-left: 35px;
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tag-checkbox {
+            margin: 0;
+        }
+        
+        .drop-indicator {
+            height: 2px;
+            background: #4facfe;
+            margin: 2px 0;
+            border-radius: 1px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .drop-indicator.show {
+            opacity: 1;
+        }
+        
+        .debug-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .test-buttons {
+            margin: 20px 0;
+        }
+        
+        .test-buttons button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .test-buttons button:hover {
+            background: #0056b3;
+        }
+        
+        .test-buttons button.success {
+            background: #28a745;
+        }
+        
+        .test-buttons button.error {
+            background: #dc3545;
+        }
+        
+        .section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+        }
+        
+        .section h3 {
+            margin-top: 0;
+            color: #495057;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Drag and Drop Test with Real Data</h1>
+        
+        <div class="test-buttons">
+            <button onclick="loadRealData()">Load Real Data</button>
+            <button onclick="addSelectedTags()">Add Selected Tags</button>
+            <button onclick="testReorderAPI()">Test Reorder API</button>
+            <button onclick="clearSelectedTags()">Clear Selected Tags</button>
+            <button onclick="testDragAndDrop()">Test Drag and Drop</button>
+            <button onclick="testDropIndicators()">Test Drop Indicators</button>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            Debug info will appear here...
+        </div>
+        
+        <div class="section">
+            <h3>Available Tags (First 10)</h3>
+            <div id="availableTags"></div>
+        </div>
+        
+        <div class="section">
+            <h3>Selected Tags (Drag to reorder)</h3>
+            <div id="selectedTags"></div>
+        </div>
+    </div>
+
+    <script src="js/drag-and-drop-manager.js"></script>
+    <script>
+        let availableTagsData = [];
+        let selectedTagsData = [];
+        
+        function updateDebugInfo(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            debugInfo.scrollTop = debugInfo.scrollHeight;
+        }
+        
+        async function loadRealData() {
+            try {
+                updateDebugInfo('Loading available tags...');
+                const response = await fetch('/api/available-tags');
+                const data = await response.json();
+                availableTagsData = data;
+                
+                updateDebugInfo(`Loaded ${data.length} available tags`);
+                displayAvailableTags();
+                
+                // Also load selected tags
+                await loadSelectedTags();
+            } catch (error) {
+                updateDebugInfo(`ERROR loading data: ${error.message}`);
+            }
+        }
+        
+        async function loadSelectedTags() {
+            try {
+                const response = await fetch('/api/selected-tags');
+                const data = await response.json();
+                selectedTagsData = data;
+                
+                updateDebugInfo(`Loaded ${data.length} selected tags`);
+                displaySelectedTags();
+            } catch (error) {
+                updateDebugInfo(`ERROR loading selected tags: ${error.message}`);
+            }
+        }
+        
+        function displayAvailableTags() {
+            const container = document.getElementById('availableTags');
+            const first10 = availableTagsData.slice(0, 10);
+            
+            container.innerHTML = first10.map(tag => `
+                <div class="tag-item">
+                    <div class="tag-content">${tag['Product Name*']}</div>
+                </div>
+            `).join('');
+        }
+        
+        function displaySelectedTags() {
+            const container = document.getElementById('selectedTags');
+            
+            if (selectedTagsData.length === 0) {
+                container.innerHTML = '<p>No selected tags. Use "Add Selected Tags" to add some.</p>';
+                return;
+            }
+            
+            // Create a simple flat structure for testing (no hierarchy)
+            container.innerHTML = selectedTagsData.map((tag, index) => `
+                <div class="tag-item" data-tag-name="${tag}" data-tag-id="test-tag-${index}">
+                    <div class="tag-content">
+                        <input type="checkbox" class="tag-checkbox" value="${tag}" checked>
+                        <span>${tag}</span>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Reinitialize drag and drop
+            if (window.dragAndDropManager) {
+                window.dragAndDropManager.reinitializeTagDragAndDrop();
+            }
+        }
+        
+        async function addSelectedTags() {
+            if (availableTagsData.length === 0) {
+                updateDebugInfo('ERROR: No available tags loaded. Load data first.');
+                return;
+            }
+            
+            try {
+                const tagsToAdd = availableTagsData.slice(0, 4).map(tag => tag['Product Name*']);
+                
+                updateDebugInfo(`Adding tags: ${tagsToAdd.join(', ')}`);
+                
+                const response = await fetch('/api/move-tags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'move',
+                        direction: 'to_selected',
+                        tags: tagsToAdd
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateDebugInfo('✅ Tags added successfully');
+                    await loadSelectedTags();
+                } else {
+                    updateDebugInfo(`❌ Failed to add tags: ${data.message}`);
+                }
+            } catch (error) {
+                updateDebugInfo(`ERROR adding tags: ${error.message}`);
+            }
+        }
+        
+        async function clearSelectedTags() {
+            try {
+                updateDebugInfo('Clearing selected tags...');
+                
+                const response = await fetch('/api/move-tags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'move',
+                        direction: 'to_available',
+                        selectAll: true
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateDebugInfo('✅ Selected tags cleared');
+                    await loadSelectedTags();
+                } else {
+                    updateDebugInfo(`❌ Failed to clear tags: ${data.message}`);
+                }
+            } catch (error) {
+                updateDebugInfo(`ERROR clearing tags: ${error.message}`);
+            }
+        }
+        
+        async function testReorderAPI() {
+            if (selectedTagsData.length < 2) {
+                updateDebugInfo('ERROR: Need at least 2 selected tags to test reordering');
+                return;
+            }
+            
+            try {
+                // Create a new order by moving the first item to the end
+                const newOrder = [...selectedTagsData];
+                const firstItem = newOrder.shift();
+                newOrder.push(firstItem);
+                
+                updateDebugInfo(`Testing reorder: ${newOrder.join(' → ')}`);
+                
+                const response = await fetch('/api/move-tags', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'reorder',
+                        newOrder: newOrder
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateDebugInfo('✅ Reorder API test successful');
+                    await loadSelectedTags();
+                } else {
+                    updateDebugInfo(`❌ Reorder API test failed: ${data.message}`);
+                }
+            } catch (error) {
+                updateDebugInfo(`ERROR testing reorder API: ${error.message}`);
+            }
+        }
+        
+        function testDragAndDrop() {
+            updateDebugInfo('🧪 Testing drag and drop functionality...');
+            
+            const container = document.getElementById('selectedTags');
+            const allTagItems = container.querySelectorAll('.tag-item');
+            const tagItems = Array.from(allTagItems).filter(item => item.querySelector('.tag-checkbox'));
+            const dragHandles = container.querySelectorAll('.drag-handle');
+            
+            if (tagItems.length === 0) {
+                updateDebugInfo('❌ No draggable tag items found to test');
+                return;
+            }
+            
+            updateDebugInfo(`✅ Found ${tagItems.length} draggable tag items`);
+            
+            if (dragHandles.length === 0) {
+                updateDebugInfo('❌ No drag handles found - trying to reinitialize...');
+                if (window.dragAndDropManager) {
+                    window.dragAndDropManager.reinitializeTagDragAndDrop();
+                    setTimeout(() => {
+                        const newDragHandles = container.querySelectorAll('.drag-handle');
+                        updateDebugInfo(`✅ Reinitialized: found ${newDragHandles.length} drag handles`);
+                    }, 100);
+                }
+                return;
+            }
+            
+            updateDebugInfo(`✅ Found ${dragHandles.length} drag handles`);
+            updateDebugInfo('✅ Drag and drop should be working! Try dragging the items.');
+            
+            // Test the drag and drop manager directly
+            if (window.dragAndDropManager) {
+                const testResult = window.dragAndDropManager.testDragAndDrop();
+                updateDebugInfo(`🧪 Drag manager test result: ${JSON.stringify(testResult)}`);
+            }
+        }
+        
+        function testDropIndicators() {
+            updateDebugInfo('🧪 Testing drop indicators...');
+            
+            if (window.dragAndDropManager) {
+                window.dragAndDropManager.showDropIndicator(0);
+                updateDebugInfo('✅ Showing drop indicator at position 0');
+                
+                setTimeout(() => {
+                    window.dragAndDropManager.clearDropIndicators();
+                    updateDebugInfo('✅ Cleared drop indicators');
+                }, 2000);
+            } else {
+                updateDebugInfo('❌ Drag and drop manager not available');
+            }
+        }
+        
+        // Override console.log to also update debug info
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            updateDebugInfo(args.join(' '));
+        };
+        
+        // Override console.warn and console.error
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            updateDebugInfo('WARNING: ' + args.join(' '));
+        };
+        
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            updateDebugInfo('ERROR: ' + args.join(' '));
+        };
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugInfo('Page loaded, ready to test with real data...');
+        });
+    </script>
+</body>
+</html> 

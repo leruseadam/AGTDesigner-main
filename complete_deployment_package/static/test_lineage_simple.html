@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Lineage Editor Test</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Simple Lineage Editor Test</h1>
+        <p>This page tests the basic lineage editor functionality.</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test Lineage Editor</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-primary" onclick="testLineageEditor()">
+                            Open Lineage Editor
+                        </button>
+                        <p class="mt-2 text-muted">This should open the lineage editor modal.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Test Strain Lineage Editor</h5>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-success" onclick="testStrainLineageEditor()">
+                            Open Strain Lineage Editor
+                        </button>
+                        <p class="mt-2 text-muted">This should open the strain lineage editor modal.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <h6>Test Instructions:</h6>
+                <ol>
+                    <li>Click either button to open the respective lineage editor</li>
+                    <li>The modal should open and stay open</li>
+                    <li>Check the browser console for debug messages</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lineage Editor Modal -->
+    <div class="modal fade" id="lineageEditorModal" tabindex="-1" aria-labelledby="lineageEditorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="lineageEditorModalLabel">Edit Lineage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editTagName" class="form-label">Tag Name</label>
+                        <input type="text" class="form-control" id="editTagName" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLineageSelect" class="form-label">Lineage</label>
+                        <select class="form-select" id="editLineageSelect">
+                            <option value="SATIVA">SATIVA</option>
+                            <option value="INDICA">INDICA</option>
+                            <option value="HYBRID">HYBRID</option>
+                            <option value="HYBRID/SATIVA">HYBRID/SATIVA</option>
+                            <option value="HYBRID/INDICA">HYBRID/INDICA</option>
+                            <option value="CBD">CBD</option>
+                            <option value="MIXED">MIXED</option>
+                            <option value="PARA">PARA</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveLineageChanges">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Strain Lineage Editor Modal -->
+    <div class="modal fade" id="strainLineageEditorModal" tabindex="-1" aria-labelledby="strainLineageEditorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="strainLineageEditorModalLabel">Edit Strain Lineage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This will update the lineage for ALL products with the selected strain.
+                    </div>
+                    <form id="strainLineageEditorForm">
+                        <div class="mb-3">
+                            <label for="strainName" class="form-label">Strain Name</label>
+                            <input type="text" class="form-control" id="strainName" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="strainLineageSelect" class="form-label">New Lineage</label>
+                            <select class="form-select" id="strainLineageSelect">
+                                <option value="SATIVA">SATIVA</option>
+                                <option value="INDICA">INDICA</option>
+                                <option value="HYBRID">HYBRID</option>
+                                <option value="HYBRID/SATIVA">HYBRID/SATIVA</option>
+                                <option value="HYBRID/INDICA">HYBRID/INDICA</option>
+                                <option value="CBD">CBD</option>
+                                <option value="MIXED">MIXED</option>
+                                <option value="PARA">PARA</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Affected Products</label>
+                            <div id="affectedProductsList" class="border rounded p-3 bg-light">
+                                <!-- Products will be listed here -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveStrainLineageBtn">Update All Products</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the lineage editor script -->
+    <script src="static/js/lineage-editor.js"></script>
+    
+    <script>
+        function testLineageEditor() {
+            console.log('Testing lineage editor...');
+            
+            // Check if the modal element exists
+            const modalElement = document.getElementById('lineageEditorModal');
+            if (!modalElement) {
+                console.error('lineageEditorModal element not found');
+                alert('Lineage Editor modal not found');
+                return;
+            }
+            
+            // Check if Bootstrap is available
+            if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
+                console.error('Bootstrap.Modal not available');
+                alert('Bootstrap not loaded');
+                return;
+            }
+            
+            // Set test data
+            document.getElementById('editTagName').value = 'Test Product';
+            document.getElementById('editLineageSelect').value = 'HYBRID';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            console.log('Lineage editor modal should be visible now');
+        }
+        
+        function testStrainLineageEditor() {
+            console.log('Testing strain lineage editor...');
+            
+            // Check if the modal element exists
+            const modalElement = document.getElementById('strainLineageEditorModal');
+            if (!modalElement) {
+                console.error('strainLineageEditorModal element not found');
+                alert('Strain Lineage Editor modal not found');
+                return;
+            }
+            
+            // Check if Bootstrap is available
+            if (typeof bootstrap === 'undefined' || typeof bootstrap.Modal === 'undefined') {
+                console.error('Bootstrap.Modal not available');
+                alert('Bootstrap not loaded');
+                return;
+            }
+            
+            // Set test data
+            document.getElementById('strainName').value = 'Test Strain';
+            document.getElementById('strainLineageSelect').value = 'HYBRID';
+            document.getElementById('affectedProductsList').innerHTML = '<p>Test Product 1</p><p>Test Product 2</p>';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+            
+            console.log('Strain lineage editor modal should be visible now');
+        }
+        
+        // Add event listeners for save buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const saveLineageBtn = document.getElementById('saveLineageChanges');
+            if (saveLineageBtn) {
+                saveLineageBtn.addEventListener('click', function() {
+                    console.log('Save lineage changes clicked');
+                    alert('Save lineage changes clicked');
+                });
+            }
+            
+            const saveStrainLineageBtn = document.getElementById('saveStrainLineageBtn');
+            if (saveStrainLineageBtn) {
+                saveStrainLineageBtn.addEventListener('click', function() {
+                    console.log('Save strain lineage changes clicked');
+                    alert('Save strain lineage changes clicked');
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

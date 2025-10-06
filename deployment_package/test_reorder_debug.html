@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reorder Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tag-list {
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 300px;
+            background: #f9f9f9;
+        }
+        .tag-list h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .tag-item {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 6px;
+            padding: 8px 12px 8px 40px;
+            margin-bottom: 8px;
+            cursor: grab;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+        .tag-item:hover {
+            background: #bbdefb;
+            transform: translateY(-1px);
+        }
+        .tag-item.dragging {
+            opacity: 0.8;
+            transform: scale(1.05) rotate(2deg);
+            z-index: 1000;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.3);
+        }
+        .drag-handle {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #2196f3;
+            cursor: grab;
+            font-size: 16px;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        .drop-zone {
+            transition: all 0.3s ease;
+        }
+        .drop-zone.drag-over {
+            background: rgba(33, 150, 243, 0.1);
+            border-color: #2196f3;
+        }
+        .debug-info {
+            background: #f0f0f0;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Reorder Debug Test</h2>
+        <p>Try dragging the tags to reorder them. Check the console for debug information.</p>
+        
+        <div id="selectedTags" class="tag-list drop-zone">
+            <h3>Selected Tags (Drag to reorder)</h3>
+            <div class="tag-item" data-tag="Tag 1">
+                <span class="drag-handle">⋮⋮⋮</span>
+                Tag 1
+            </div>
+            <div class="tag-item" data-tag="Tag 2">
+                <span class="drag-handle">⋮⋮⋮</span>
+                Tag 2
+            </div>
+            <div class="tag-item" data-tag="Tag 3">
+                <span class="drag-handle">⋮⋮⋮</span>
+                Tag 3
+            </div>
+            <div class="tag-item" data-tag="Tag 4">
+                <span class="drag-handle">⋮⋮⋮</span>
+                Tag 4
+            </div>
+            <div class="tag-item" data-tag="Tag 5">
+                <span class="drag-handle">⋮⋮⋮</span>
+                Tag 5
+            </div>
+        </div>
+        
+        <div class="debug-info">
+            <strong>Debug Info:</strong><br>
+            <div id="debugOutput">Waiting for drag events...</div>
+        </div>
+    </div>
+
+    <script>
+        // Simple drag and drop implementation for testing
+        class SimpleDragAndDrop {
+            constructor() {
+                this.isDragging = false;
+                this.draggedElement = null;
+                this.lastMouseY = 0;
+                this.init();
+            }
+
+            init() {
+                console.log('Initializing SimpleDragAndDrop...');
+                this.setupDragAndDrop();
+                this.updateDebugInfo('Initialized');
+            }
+
+            setupDragAndDrop() {
+                const container = document.getElementById('selectedTags');
+                const tagItems = container.querySelectorAll('.tag-item');
+
+                tagItems.forEach(item => {
+                    item.addEventListener('mousedown', (e) => this.handleMouseDown(e, item));
+                });
+
+                document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+                document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+            }
+
+            handleMouseDown(e, item) {
+                if (e.target.classList.contains('drag-handle') || e.target.closest('.drag-handle')) {
+                    e.preventDefault();
+                    this.startDrag(item, e);
+                }
+            }
+
+            startDrag(element, event) {
+                console.log('Starting drag for:', element.textContent.trim());
+                this.isDragging = true;
+                this.draggedElement = element;
+                this.lastMouseY = event.clientY;
+
+                element.classList.add('dragging');
+                this.updateDebugInfo(`Started dragging: ${element.textContent.trim()}`);
+            }
+
+            handleMouseMove(e) {
+                if (!this.isDragging) return;
+
+                e.preventDefault();
+                this.lastMouseY = e.clientY;
+                
+                // Update drag image position
+                if (this.draggedElement) {
+                    this.draggedElement.style.transform = `translateY(${e.clientY - this.draggedElement.getBoundingClientRect().top}px)`;
+                }
+            }
+
+            handleMouseUp(e) {
+                if (!this.isDragging) return;
+
+                console.log('Ending drag');
+                this.isDragging = false;
+
+                if (this.draggedElement) {
+                    this.draggedElement.classList.remove('dragging');
+                    this.draggedElement.style.transform = '';
+                    this.handleReorder(this.draggedElement, e.clientY);
+                    this.draggedElement = null;
+                }
+            }
+
+            handleReorder(draggedElement, mouseY) {
+                const container = document.getElementById('selectedTags');
+                const tagItems = Array.from(container.querySelectorAll('.tag-item'));
+                const draggedIndex = tagItems.indexOf(draggedElement);
+
+                if (draggedIndex === -1) {
+                    console.log('Dragged element not found');
+                    return;
+                }
+
+                let dropIndex = draggedIndex;
+
+                // Find new position based on mouse Y
+                for (let i = 0; i < tagItems.length; i++) {
+                    const item = tagItems[i];
+                    const rect = item.getBoundingClientRect();
+                    
+                    if (mouseY <= rect.top + rect.height / 2) {
+                        dropIndex = i;
+                        break;
+                    }
+                }
+
+                if (mouseY > container.getBoundingClientRect().bottom) {
+                    dropIndex = tagItems.length;
+                }
+
+                console.log(`Moving from index ${draggedIndex} to index ${dropIndex}`);
+
+                if (draggedIndex !== dropIndex) {
+                    draggedElement.remove();
+                    
+                    if (dropIndex >= tagItems.length) {
+                        container.appendChild(draggedElement);
+                    } else {
+                        const targetElement = tagItems[dropIndex];
+                        container.insertBefore(draggedElement, targetElement);
+                    }
+                    
+                    this.updateDebugInfo(`Moved ${draggedElement.textContent.trim()} from position ${draggedIndex + 1} to ${dropIndex + 1}`);
+                    console.log('Reorder completed successfully');
+                } else {
+                    this.updateDebugInfo('No position change needed');
+                }
+            }
+
+            updateDebugInfo(message) {
+                const debugOutput = document.getElementById('debugOutput');
+                const timestamp = new Date().toLocaleTimeString();
+                debugOutput.innerHTML = `[${timestamp}] ${message}<br>` + debugOutput.innerHTML;
+                
+                // Keep only last 10 messages
+                const lines = debugOutput.innerHTML.split('<br>');
+                if (lines.length > 10) {
+                    debugOutput.innerHTML = lines.slice(0, 10).join('<br>');
+                }
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.simpleDragAndDrop = new SimpleDragAndDrop();
+        });
+    </script>
+</body>
+</html> 

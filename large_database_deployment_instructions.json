@@ -1,0 +1,47 @@
+{
+  "database_info": {
+    "tables": [
+      "strains",
+      "sqlite_sequence",
+      "lineage_history",
+      "strain_brand_lineage",
+      "products_backup",
+      "_migration_log",
+      "products",
+      "lost_and_found"
+    ],
+    "product_count": 17841,
+    "size_bytes": 524070912,
+    "size_mb": 499.79
+  },
+  "files_created": {
+    "database": "product_database.db",
+    "sql_dump": "product_database_dump.sql",
+    "compressed_database": "product_database.db.gz",
+    "compressed_dump": "product_database_dump.sql.gz"
+  },
+  "file_sizes": {
+    "database_mb": 499.79,
+    "sql_dump_mb": 1921.87,
+    "compressed_database_mb": 29.25,
+    "compressed_dump_mb": 26.18
+  },
+  "pythonanywhere_requirements": {
+    "minimum_plan": "Hacker ($5/month)",
+    "recommended_plan": "Web Developer ($20/month)",
+    "reason": "Database is 499.79 MB, free tier only allows 512 MB total"
+  },
+  "upload_method": "Console upload (files too large for Files tab)",
+  "deployment_steps": [
+    "1. Upgrade PythonAnywhere to Hacker plan ($5/month) - REQUIRED",
+    "2. Clone repository: git clone https://github.com/leruseadam/AGTDesigner.git",
+    "3. Upload compressed files via console:",
+    "   - product_database_dump.sql.gz (26.18 MB)",
+    "4. Restore database:",
+    "   gunzip product_database_dump.sql.gz",
+    "   python3 -c \"import sqlite3; conn = sqlite3.connect('product_database.db'); conn.executescript(open('product_database_dump.sql').read()); conn.close()\"",
+    "5. Test database:",
+    "   python3 -c \"import sqlite3; conn = sqlite3.connect('product_database.db'); print('OK')\"",
+    "6. Run deployment script: bash pythonanywhere_quick_setup.sh"
+  ]
+}

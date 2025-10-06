@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lineage Editor UX Test</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- FontAwesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link href="static/css/styles.css" rel="stylesheet">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .feature-list li:before {
+            content: "✅ ";
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-5">
+            <i class="fas fa-leaf me-3"></i>
+            Lineage Editor UX Test
+        </h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="test-section">
+                    <h3><i class="fas fa-edit me-2"></i>Individual Product Lineage Editor</h3>
+                    <p>Test the enhanced individual product lineage editor with improved styling and UX.</p>
+                    <button class="test-button" onclick="testIndividualLineageEditor()">
+                        <i class="fas fa-tag me-2"></i>
+                        Test Individual Editor
+                    </button>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="test-section">
+                    <h3><i class="fas fa-diagram-3 me-2"></i>Strain Lineage Editor</h3>
+                    <p>Test the enhanced strain lineage editor for bulk editing with improved styling and UX.</p>
+                    <button class="test-button" onclick="testStrainLineageEditor()">
+                        <i class="fas fa-seedling me-2"></i>
+                        Test Strain Editor
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3><i class="fas fa-star me-2"></i>UX Improvements Implemented</h3>
+            <ul class="feature-list">
+                <li><strong>Enhanced Visual Design:</strong> Consistent glass-card styling with the main app</li>
+                <li><strong>Better Form Layout:</strong> Improved spacing, grid layouts, and responsive design</li>
+                <li><strong>Icon Integration:</strong> FontAwesome icons for better visual hierarchy</li>
+                <li><strong>Enhanced Labels:</strong> Descriptive text under each form field</li>
+                <li><strong>Visual Feedback:</strong> Loading states, success messages, and error handling</li>
+                <li><strong>Toast Notifications:</strong> Better user feedback with styled notifications</li>
+                <li><strong>Improved Navigation:</strong> Better focus management and keyboard navigation</li>
+                <li><strong>Mobile Responsive:</strong> Touch-friendly layouts for all screen sizes</li>
+                <li><strong>Consistent Styling:</strong> Same color scheme and design language as main app</li>
+                <li><strong>Better Error Handling:</strong> Comprehensive error messages and validation</li>
+            </ul>
+        </div>
+        
+        <div class="test-section">
+            <h3><i class="fas fa-code me-2"></i>Technical Implementation</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Files Modified:</h5>
+                    <ul>
+                        <li><code>templates/lineage_editor.html</code> - Enhanced HTML structure</li>
+                        <li><code>static/js/lineage-editor.js</code> - Improved JavaScript functionality</li>
+                        <li><code>static/js/tags_table.js</code> - Enhanced individual editor</li>
+                        <li><code>static/css/styles.css</code> - New CSS styling</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h5>Key Features:</h5>
+                    <ul>
+                        <li>Glass-card styling with backdrop blur</li>
+                        <li>Enhanced form controls with modern styling</li>
+                        <li>Responsive grid layouts</li>
+                        <li>Toast notification system</li>
+                        <li>Improved loading states</li>
+                        <li>Better error handling</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include the lineage editor modals -->
+    {% include 'lineage_editor.html' %}
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Lineage Editor JS -->
+    <script src="static/js/lineage-editor.js"></script>
+    
+    <!-- Tags Table JS -->
+    <script src="static/js/tags_table.js"></script>
+    
+    <script>
+        function testIndividualLineageEditor() {
+            console.log('Testing individual lineage editor...');
+            
+            // Test the individual lineage editor
+            if (typeof TagsTable !== 'undefined' && TagsTable.openLineageEditor) {
+                TagsTable.openLineageEditor('Test Product', 'HYBRID');
+                console.log('✅ Individual lineage editor opened successfully');
+            } else {
+                console.error('❌ TagsTable.openLineageEditor not available');
+                alert('Individual lineage editor not available. Check console for details.');
+            }
+        }
+        
+        function testStrainLineageEditor() {
+            console.log('Testing strain lineage editor...');
+            
+            // Test the strain lineage editor
+            if (window.strainLineageEditor && typeof window.strainLineageEditor.openEditor === 'function') {
+                window.strainLineageEditor.openEditor('Test Strain', 'HYBRID');
+                console.log('✅ Strain lineage editor opened successfully');
+            } else {
+                console.error('❌ Strain lineage editor not available');
+                alert('Strain lineage editor not available. Check console for details.');
+            }
+        }
+        
+        // Log available functions on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== Lineage Editor Test Page Loaded ===');
+            console.log('TagsTable available:', typeof TagsTable !== 'undefined');
+            console.log('strainLineageEditor available:', typeof window.strainLineageEditor !== 'undefined');
+            console.log('Bootstrap available:', typeof bootstrap !== 'undefined');
+        });
+    </script>
+</body>
+</html>

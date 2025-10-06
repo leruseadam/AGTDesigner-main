@@ -1,0 +1,26 @@
+[
+  {
+    "product_name": "Blue Dream Pre-Roll Twin Pack",
+    "inventory_name": "Blue Dream Pre-Roll Twin Pack",
+    "product_type": "Pre-Roll",
+    "brand": "Cloud 9 Farms",
+    "weight": "0.5g x 2",
+    "price": "18.00"
+  },
+  {
+    "product_name": "OG Kush Infused Pre-Roll",
+    "inventory_name": "OG Kush Infused Pre-Roll",
+    "product_type": "Infused Pre-Roll", 
+    "brand": "Dabstract",
+    "weight": "1g",
+    "price": "25.00"
+  },
+  {
+    "product_name": "Mixed Strain Pre-Roll 5 Pack",
+    "inventory_name": "Mixed Strain Pre-Roll 5 Pack",
+    "product_type": "Pre-Roll",
+    "brand": "Phat Panda",
+    "weight": "1g x 5",
+    "price": "45.00"
+  }
+]

@@ -1,0 +1,102 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+venv_pythonanywhere/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.db-shm
+*.db-wal
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# Uploads and outputs (keep structure but exclude large files)
+uploads/*.db
+uploads/*.db-shm  
+uploads/*.db-wal
+uploads/*.db.gz
+uploads/*.xlsx
+output/
+cache/
+
+# Sensitive data
+config.py
+secrets.py
+.env
+*.key
+*.pem
+
+# Backup files
+*_backup_*
+backup/
+
+# PythonAnywhere specific
+pythonanywhere.log product_database_fixed.db.gz
+*.xlsx
+*.tar.gz
+# Large files to exclude from git
+*.db
+*.db.gz
+*.tar.gz
+*.zip
+*.xlsx
+cache/*
+sessions/*
+__pycache__/*
+*.pyc
+*.pyo
+.DS_Store

@@ -1,0 +1,219 @@
+<!-- Unified Lineage Editor Modal -->
+<div id="unifiedLineageEditorModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content glass-card">
+            <div class="modal-header border-0 bg-transparent">
+                <h5 class="modal-title text-white">
+                    <i class="fas fa-dna me-2 text-info"></i>
+                    Lineage Editor
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Mode Selection Tabs -->
+                <ul class="nav nav-tabs nav-tabs-modern mb-4" id="lineageEditorTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="single-product-tab" data-bs-toggle="tab" data-bs-target="#single-product" type="button" role="tab">
+                            <i class="fas fa-edit me-2"></i>Single Product
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="strain-bulk-tab" data-bs-toggle="tab" data-bs-target="#strain-bulk" type="button" role="tab">
+                            <i class="fas fa-seedling me-2"></i>Strain Bulk Update
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="multi-strain-tab" data-bs-toggle="tab" data-bs-target="#multi-strain" type="button" role="tab">
+                            <i class="fas fa-bolt me-2"></i>Multi-Strain Update
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="lineageEditorTabContent">
+                    <!-- Single Product Tab -->
+                    <div class="tab-pane fade show active" id="single-product" role="tabpanel">
+                        <div class="alert alert-info glass-alert mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Single Product Update:</strong> Search for and update the lineage for a specific strain.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="singleProductSearch" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-search me-2 text-primary"></i>
+                                    Search for Strain
+                                </label>
+                                <input type="text" class="form-control form-control-modern" id="singleProductSearch" 
+                                       placeholder="Type to search for strains...">
+                                <div class="form-text text-white-50">
+                                    <small>Start typing to find strains in your database</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="singleProductLineage" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-leaf me-2 text-success"></i>
+                                    New Lineage
+                                </label>
+                                <select class="form-select form-select-modern" id="singleProductLineage">
+                                    <option value="">-- Select Lineage --</option>
+                                    <option value="SATIVA">SATIVA</option>
+                                    <option value="INDICA">INDICA</option>
+                                    <option value="HYBRID">HYBRID</option>
+                                    <option value="HYBRID/SATIVA">HYBRID/SATIVA</option>
+                                    <option value="HYBRID/INDICA">HYBRID/INDICA</option>
+                                    <option value="CBD">CBD</option>
+                                    <option value="CBD_BLEND">CBD_BLEND</option>
+                                    <option value="MIXED">MIXED</option>
+                                    <option value="PARA">PARA</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-white-50">
+                                <i class="fas fa-list me-2 text-info"></i>
+                                Search Results
+                            </label>
+                            <div id="strainSearchResults" class="glass-card p-3">
+                                <div class="text-center text-white-50">
+                                    <i class="fas fa-search me-2"></i>
+                                    Search for strains to see results here
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="lineageOptionsSearch" class="form-label fw-semibold text-white-50">
+                                <i class="fas fa-filter me-2 text-warning"></i>
+                                Filter Lineage Options
+                            </label>
+                            <input type="text" class="form-control form-control-modern" id="lineageOptionsSearch" 
+                                   placeholder="Type to filter lineage options...">
+                        </div>
+                    </div>
+
+                    <!-- Strain Bulk Update Tab -->
+                    <div class="tab-pane fade" id="strain-bulk" role="tabpanel">
+                        <div class="alert alert-warning glass-alert mb-4">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Bulk Strain Update:</strong> This will update ALL products with the selected strain across your entire database.
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="bulkStrainName" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-seedling me-2 text-success"></i>
+                                    Strain Name
+                                </label>
+                                <input type="text" class="form-control form-control-modern" id="bulkStrainName" readonly>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="bulkStrainLineage" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-leaf me-2 text-primary"></i>
+                                    New Lineage
+                                </label>
+                                <select class="form-select form-select-modern" id="bulkStrainLineage">
+                                    <option value="">-- Select Lineage --</option>
+                                    <option value="SATIVA">SATIVA</option>
+                                    <option value="INDICA">INDICA</option>
+                                    <option value="HYBRID">HYBRID</option>
+                                    <option value="HYBRID/SATIVA">HYBRID/SATIVA</option>
+                                    <option value="HYBRID/INDICA">HYBRID/INDICA</option>
+                                    <option value="CBD">CBD</option>
+                                    <option value="CBD_BLEND">CBD_BLEND</option>
+                                    <option value="MIXED">MIXED</option>
+                                    <option value="PARA">PARA</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="bulkStrainSearch" class="form-label fw-semibold text-white-50">
+                                <i class="fas fa-search me-2 text-info"></i>
+                                Search Lineage Options
+                            </label>
+                            <input type="text" class="form-control form-control-modern" id="bulkStrainSearch" 
+                                   placeholder="Type to search lineage options...">
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-white-50">
+                                <i class="fas fa-boxes me-2 text-info"></i>
+                                Affected Products
+                            </label>
+                            <div id="bulkAffectedProducts" class="glass-card p-4">
+                                <div class="text-center text-white-50">
+                                    <div class="spinner-border text-primary mb-3" role="status">
+                                        <span class="visually-hidden">Loading...</span>
+                                    </div>
+                                    <p class="mb-0">Loading affected products...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Strain Update Tab -->
+                    <div class="tab-pane fade" id="multi-strain" role="tabpanel">
+                        <div class="alert alert-info glass-alert mb-4">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Multi-Strain Update:</strong> Update multiple strains at once with the same lineage.
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold text-white-50">
+                                <i class="fas fa-list me-2 text-primary"></i>
+                                Selected Strains
+                            </label>
+                            <div id="multiStrainList" class="glass-card p-3">
+                                <div class="text-center text-white-50">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No strains selected
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="multiStrainLineage" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-leaf me-2 text-success"></i>
+                                    New Lineage for All Selected
+                                </label>
+                                <select class="form-select form-select-modern" id="multiStrainLineage">
+                                    <option value="">-- Select Lineage --</option>
+                                    <option value="SATIVA">SATIVA</option>
+                                    <option value="INDICA">INDICA</option>
+                                    <option value="HYBRID">HYBRID</option>
+                                    <option value="HYBRID/SATIVA">HYBRID/SATIVA</option>
+                                    <option value="HYBRID/INDICA">HYBRID/INDICA</option>
+                                    <option value="CBD">CBD</option>
+                                    <option value="CBD_BLEND">CBD_BLEND</option>
+                                    <option value="MIXED">MIXED</option>
+                                    <option value="PARA">PARA</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <label for="multiStrainSearch" class="form-label fw-semibold text-white-50">
+                                    <i class="fas fa-search me-2 text-info"></i>
+                                    Search Lineage Options
+                                </label>
+                                <input type="text" class="form-control form-control-modern" id="multiStrainSearch" 
+                                       placeholder="Type to search lineage options...">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 bg-transparent">
+                <button type="button" class="btn btn-glass" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Cancel
+                </button>
+                <button type="button" class="btn btn-modern2" id="applyLineageUpdate">
+                    <i class="fas fa-save me-2"></i>
+                    Apply Update
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

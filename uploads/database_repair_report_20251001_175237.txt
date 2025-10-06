@@ -1,0 +1,87 @@
+DATABASE DIAGNOSIS AND REPAIR REPORT
+==================================================
+Report generated: 2025-10-01 17:52:37
+Database: /Users/adamcordova/Desktop/labelMaker_ QR copy SAFEST copy 15/uploads/product_database.db
+
+CURRENT DATABASE STATUS
+------------------------------
+Total Products: 10,262
+Total Strains: 2,556
+
+MISSING DATA ANALYSIS
+------------------------------
+🔴 CRITICAL ISSUES (≥70% missing):
+  • Thc Cbd: 7,797 (75.98%)
+  • Batch Lot: 7,857 (76.56%)
+
+🟡 MODERATE ISSUES (30-69% missing):
+  • Strain: 3,542 (34.52%)
+
+PRODUCT TYPE DISTRIBUTION
+------------------------------
+Flower: 3,164 (30.8%)
+Pre-Roll: 1,651 (16.1%)
+Vape Cartridge: 1,516 (14.8%)
+Edible (Solid): 1,186 (11.6%)
+Concentrate: 1,151 (11.2%)
+Infused Pre-Roll: 699 (6.8%)
+Edible (Liquid): 218 (2.1%)
+Solventless Concentrate: 189 (1.8%)
+Paraphernalia: 125 (1.2%)
+Capsule: 107 (1.0%)
+
+STRAIN COVERAGE BY PRODUCT TYPE
+------------------------------
+Flower: 79.2% coverage (2507/3164)
+Pre-Roll: 4.2% coverage (70/1651)
+Vape Cartridge: 73.9% coverage (1121/1516)
+Edible (Solid): 100.0% coverage (1186/1186)
+Concentrate: 82.6% coverage (951/1151)
+Infused Pre-Roll: 9.9% coverage (69/699)
+Edible (Liquid): 100.0% coverage (218/218)
+Solventless Concentrate: 59.3% coverage (112/189)
+Paraphernalia: 100.0% coverage (125/125)
+Capsule: 100.0% coverage (107/107)
+Topical: 100.0% coverage (81/81)
+Tincture: 100.0% coverage (53/53)
+rso/co2 tankers: 100.0% coverage (32/32)
+RSO/CO2 Tankers: 100.0% coverage (29/29)
+TRADE SAMPLE - Not for Sale: 100.0% coverage (24/24)
+High CBD Liquid Edible - DOH Compliant: 100.0% coverage (11/11)
+High CBD Edible Solid - DOH Compliant: 100.0% coverage (7/7)
+High CBD Topical - DOH Compliant: 100.0% coverage (6/6)
+High THC Liquid Edible - DOH Compliant: 100.0% coverage (4/4)
+flower: 0.0% coverage (0/2)
+edible: 100.0% coverage (2/2)
+Alcohol/Ethanol Extract: 100.0% coverage (2/2)
+High THC Solid Edible - DOH Compliant: 100.0% coverage (1/1)
+Edible: 100.0% coverage (1/1)
+CO2 Concentrate: 100.0% coverage (1/1)
+
+REPAIRS COMPLETED
+------------------------------
+Strain Data Repair:
+  • Products repaired: 6,122
+  • Products skipped: 2,253
+  • Total processed: 8,375
+
+Default Values Set:
+  • Doh: 7 updates
+  • Test Unit: 7,857 updates
+  • Room: 4 updates
+  • State: 4 updates
+  • Sample: 4 updates
+  • Mj Product: 4 updates
+
+RECOMMENDATIONS
+------------------------------
+🟡 MEDIUM PRIORITY:
+  • Require lab test results for cannabis products
+  • Set up automatic data validation during product entry
+  • Consider default values for non-cannabis products
+
+🟢 GENERAL RECOMMENDATIONS:
+  • Implement data validation rules during product import
+  • Create standardized product naming conventions
+  • Set up automated data quality monitoring
+  • Regular database cleanup and maintenance

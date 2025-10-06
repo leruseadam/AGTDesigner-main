@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Initialization Test - PythonAnywhere</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .test-section { border: 1px solid #ccc; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .status { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .status.success { background-color: #d4edda; color: #155724; }
+        .status.error { background-color: #f8d7da; color: #721c24; }
+        .status.info { background-color: #d1ecf1; color: #0c5460; }
+        button { padding: 10px 20px; margin: 10px; cursor: pointer; }
+        .loading { display: inline-block; width: 20px; height: 20px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <h1>PythonAnywhere Initialization Test</h1>
+    
+    <div class="test-section">
+        <h3>API Endpoint Tests</h3>
+        <button onclick="testEndpoint('/api/initial-data')">Test /api/initial-data</button>
+        <button onclick="testEndpoint('/api/status')">Test /api/status</button>
+        <button onclick="testEndpoint('/api/health')">Test /api/health</button>
+        <div id="apiResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>File Loading Tests</h3>
+        <button onclick="testFileLoading()">Test File Loading</button>
+        <button onclick="testDefaultFile()">Test Default File</button>
+        <div id="fileResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Performance Tests</h3>
+        <button onclick="testPerformance()">Test Performance</button>
+        <div id="performanceResults"></div>
+    </div>
+    
+    <div class="test-section">
+        <h3>Emergency Fixes</h3>
+        <button onclick="forceComplete()">Force Complete Initialization</button>
+        <button onclick="clearSession()">Clear Session</button>
+        <button onclick="reloadPage()">Reload Page</button>
+        <div id="emergencyResults"></div>
+    </div>
+    
+    <script>
+        async function testEndpoint(endpoint) {
+            const resultsDiv = document.getElementById('apiResults');
+            resultsDiv.innerHTML = '<div class="status info"><div class="loading"></div> Testing ' + endpoint + '...</div>';
+            
+            try {
+                const startTime = Date.now();
+                const response = await fetch(endpoint);
+                const endTime = Date.now();
+                const duration = endTime - startTime;
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML = '<div class="status success">✅ ' + endpoint + ' is working (${duration}ms)<br>Response: ' + JSON.stringify(data).substring(0, 200) + '...</div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="status error">❌ ' + endpoint + ' failed: ' + response.status + ' ' + response.statusText + ' (${duration}ms)</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ ' + endpoint + ' error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function testFileLoading() {
+            const resultsDiv = document.getElementById('fileResults');
+            resultsDiv.innerHTML = '<div class="status info"><div class="loading"></div> Testing file loading...</div>';
+            
+            try {
+                const response = await fetch('/api/initial-data');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.available_tags && data.available_tags.length > 0) {
+                        resultsDiv.innerHTML = '<div class="status success">✅ File loading working: ' + data.available_tags.length + ' tags loaded</div>';
+                    } else {
+                        resultsDiv.innerHTML = '<div class="status info">ℹ️ No file data available: ' + (data.message || 'No data') + '</div>';
+                    }
+                } else {
+                    resultsDiv.innerHTML = '<div class="status error">❌ File loading failed: ' + response.status + '</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ File loading error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function testDefaultFile() {
+            const resultsDiv = document.getElementById('fileResults');
+            resultsDiv.innerHTML = '<div class="status info"><div class="loading"></div> Testing default file...</div>';
+            
+            try {
+                const response = await fetch('/api/status');
+                if (response.ok) {
+                    const data = await response.json();
+                    resultsDiv.innerHTML = '<div class="status success">✅ Default file test: ' + JSON.stringify(data).substring(0, 200) + '...</div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="status error">❌ Default file test failed: ' + response.status + '</div>';
+                }
+            } catch (error) {
+                resultsDiv.innerHTML = '<div class="status error">❌ Default file test error: ' + error.message + '</div>';
+            }
+        }
+        
+        async function testPerformance() {
+            const resultsDiv = document.getElementById('performanceResults');
+            resultsDiv.innerHTML = '<div class="status info"><div class="loading"></div> Testing performance...</div>';
+            
+            const tests = [
+                { name: 'Initial Data', endpoint: '/api/initial-data' },
+                { name: 'Status', endpoint: '/api/status' },
+                { name: 'Health', endpoint: '/api/health' }
+            ];
+            
+            let results = [];
+            for (const test of tests) {
+                try {
+                    const startTime = Date.now();
+                    const response = await fetch(test.endpoint);
+                    const endTime = Date.now();
+                    const duration = endTime - startTime;
+                    
+                    results.push(test.name + ': ' + duration + 'ms (' + (response.ok ? 'OK' : 'FAIL') + ')');
+                } catch (error) {
+                    results.push(test.name + ': ERROR (' + error.message + ')');
+                }
+            }
+            
+            resultsDiv.innerHTML = '<div class="status success">✅ Performance test results:<br>' + results.join('<br>') + '</div>';
+        }
+        
+        function forceComplete() {
+            const resultsDiv = document.getElementById('emergencyResults');
+            resultsDiv.innerHTML = '<div class="status info">Forcing initialization completion...</div>';
+            
+            // Force hide splash screen
+            const splash = document.getElementById('appLoadingSplash');
+            if (splash) {
+                splash.style.display = 'none';
+            }
+            
+            // Show main content
+            const mainContent = document.getElementById('mainContent');
+            if (mainContent) {
+                mainContent.style.display = 'block';
+            }
+            
+            // Call emergency hide function if available
+            if (window.emergencyHideSplash) {
+                window.emergencyHideSplash();
+            }
+            
+            resultsDiv.innerHTML = '<div class="status success">✅ Forced initialization completion</div>';
+        }
+        
+        function clearSession() {
+            const resultsDiv = document.getElementById('emergencyResults');
+            resultsDiv.innerHTML = '<div class="status info">Clearing session...</div>';
+            
+            // Clear localStorage and sessionStorage
+            if (window.localStorage) {
+                localStorage.clear();
+            }
+            if (window.sessionStorage) {
+                sessionStorage.clear();
+            }
+            
+            resultsDiv.innerHTML = '<div class="status success">✅ Session cleared</div>';
+        }
+        
+        function reloadPage() {
+            window.location.reload();
+        }
+    </script>
+</body>
+</html>

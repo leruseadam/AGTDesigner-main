@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AGT Label Maker - Professional Cannabis Label Generation</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.url }}">
+    <meta property="og:title" content="AGT Label Maker - Professional Cannabis Label Generation">
+    <meta property="og:description" content="Create professional cannabis labels with AGT Label Maker. Generate compliant labels with custom branding, strain information, and regulatory requirements.">
+    <meta property="og:image" content="{{ request.url_root }}{{ url_for('static', filename='social-preview.png') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="AGT Label Maker">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ request.url }}">
+    <meta property="twitter:title" content="AGT Label Maker - Professional Cannabis Label Generation">
+    <meta property="twitter:description" content="Create professional cannabis labels with AGT Label Maker. Generate compliant labels with custom branding, strain information, and regulatory requirements.">
+    <meta property="twitter:image" content="{{ request.url_root }}{{ url_for('static', filename='social-preview.png') }}">
+    
+    <!-- Additional Meta Tags -->
+    <meta name="description" content="Create professional cannabis labels with AGT Label Maker. Generate compliant labels with custom branding, strain information, and regulatory requirements.">
+    <meta name="keywords" content="cannabis labels, label maker, AGT, professional labels, cannabis compliance, strain labels">
+    <meta name="author" content="AGT">
+    <meta name="robots" content="index, follow">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* Center splash container */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* Subtle animated background */
+        .background-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                radial-gradient(circle at 20% 80%, #00d4aa 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, #00d4aa 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, #00d4aa 0%, transparent 50%);
+            animation: background-shift 8s ease-in-out infinite;
+        }
+        
+        @keyframes background-shift {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(180deg); }
+        }
+        
+        #splash-container {
+            position: relative;
+            width: 600px;
+            height: 400px;
+            border-radius: 24px;
+            overflow: hidden;
+            background: rgba(22, 33, 62, 0.95);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 212, 170, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2;
+            /* Center the splash container */
+            transform: translateX(0);
+        }
+        
+        .splash-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 60px;
+            color: white;
+            text-align: center;
+        }
+        
+        .logo-container {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        
+        .logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00d4aa, #0099cc);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            box-shadow: 
+                0 15px 35px rgba(0, 212, 170, 0.3),
+                0 0 0 1px rgba(0, 212, 170, 0.2);
+            animation: logo-float 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00d4aa, #0099cc, #00d4aa);
+            border-radius: 22px;
+            z-index: -1;
+            animation: logo-glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes logo-float {
+            0%, 100% { 
+                transform: translateY(0px) scale(1);
+            }
+            50% { 
+                transform: translateY(-8px) scale(1.02);
+            }
+        }
+        
+        @keyframes logo-glow {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        .app-title {
+            color: #fff !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            -webkit-text-fill-color: initial !important;
+            background-clip: initial !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            text-shadow: 
+                0 4px 12px rgba(0,0,0,0.5),
+                0 6px 20px rgba(0,0,0,0.4),
+                0 2px 4px rgba(160,132,232,0.4),
+                0 0 30px rgba(160,132,232,0.3);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+            position: relative;
+            line-height: 1.1;
+            text-align: center !important;
+            width: 100%;
+        }
+        
+        .app-subtitle {
+            color: #fff !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            -webkit-text-fill-color: initial !important;
+            background-clip: initial !important;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center !important;
+            width: 100%;
+            opacity: 1;
+            text-transform: uppercase;
+            text-shadow: 
+                0 3px 8px rgba(0,0,0,0.5),
+                0 4px 16px rgba(0,0,0,0.4),
+                0 2px 4px rgba(139,92,246,0.4),
+                0 0 20px rgba(139,92,246,0.3);
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .copyright-text {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(160,132,232,0.3);
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        .loading-container {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 30px;
+        }
+        
+        .loading-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .loading-progress {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4aa, #0099cc, #00d4aa);
+            border-radius: 3px;
+            animation: loading-animation 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .loading-progress::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+        
+        @keyframes loading-animation {
+            0% { width: 0%; }
+            50% { width: 100%; }
+            100% { width: 0%; }
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        /* Responsive design for splash centering */
+        @media (max-width: 1200px) {
+            #splash-container {
+                transform: translateX(0);
+                width: 90vw;
+                max-width: 600px;
+            }
+            body::before {
+                left: 0;
+                width: 100%;
+            }
+        }
+        
+        @media (max-width: 900px) {
+            #splash-container {
+                transform: translateX(0);
+                width: 90vw;
+                max-width: 500px;
+            }
+            body::before {
+                left: 0;
+                width: 100%;
+            }
+        }
+        
+        .loading-text {
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.8;
+            margin-bottom: 25px;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-dots {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+        
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(0, 212, 170, 0.6);
+            animation: dot-pulse 1.6s ease-in-out infinite both;
+        }
+        
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        .dot:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes dot-pulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.4;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        .version-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 212, 170, 0.15);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(0, 212, 170, 0.15);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            color: #00d4aa;
+        }
+        
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00d4aa;
+            animation: status-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes status-pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .features {
+            display: flex;
+            gap: 25px;
+            margin-top: 15px;
+        }
+        
+        .feature {
+            text-align: center;
+            opacity: 0.6;
+        }
+        
+        .feature-icon {
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+        
+        .feature-text {
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="background-pattern"></div>
+    
+    <div id="splash-container">
+        <div class="splash-content">
+            <div class="logo-container"></div>
+            
+            <h1 class="app-title">AGT DESIGNER</h1>
+            <p class="app-subtitle">AUTO-GENERATING TAG DESIGNER</p>
+            
+            <div class="loading-container">
+                <div class="loading-bar">
+                    <div class="loading-progress"></div>
+                </div>
+                <div class="loading-text">Initializing application...</div>
+            </div>
+            
+            <div class="loading-dots">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            
+            <!-- Copyright text matching title card -->
+            <p class="copyright-text">©2025 Created by Adam Cordova for A Greener Today</p>
+            
+            <div class="features">
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">Fast</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">Precise</div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-text">Reliable</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="version-badge">v2.0.0</div>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span>Ready</span>
+        </div>
+    </div>
+    
+    <script>
+        const loadingTexts = [
+            'Initializing application...',
+            'Loading templates...',
+            'Preparing interface...',
+            'Almost ready...'
+        ];
+        
+        let textIndex = 0;
+        const loadingTextElement = document.querySelector('.loading-text');
+        
+        function updateLoadingText() {
+            loadingTextElement.style.opacity = '0';
+            setTimeout(() => {
+                loadingTextElement.textContent = loadingTexts[textIndex];
+                loadingTextElement.style.opacity = '1';
+                textIndex = (textIndex + 1) % loadingTexts.length;
+            }, 300);
+        }
+        
+        setInterval(updateLoadingText, 1200);
+        
+        // Add subtle interactive effects
+        document.addEventListener('mousemove', function(e) {
+            const container = document.getElementById('splash-container');
+            const rect = container.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            
+            const rotateX = (y - centerY) / 30;
+            const rotateY = (centerX - x) / 30;
+            
+            container.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        });
+        
+        document.addEventListener('mouseleave', function() {
+            const container = document.getElementById('splash-container');
+            container.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        });
+        
+        // Auto-redirect after 5 seconds
+        setTimeout(function() {
+            window.location.href = '/';
+        }, 5000);
+        
+        // Allow manual navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.key === 'Enter') {
+                window.location.href = '/';
+            }
+        });
+        
+        // Click to navigate
+        document.addEventListener('click', function() {
+            window.location.href = '/';
+        });
+    </script>
+</body>
+</html> 

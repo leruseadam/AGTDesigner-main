@@ -1,0 +1,41 @@
+# Requirements for PythonAnywhere Python 3.11 Deployment
+# Label Maker Application
+# Generated: September 27, 2025
+
+# Python version: 3.11+
+
+# Core Flask and Web Framework
+Flask==2.3.3
+Flask-CORS==4.0.0
+Flask-Caching==2.1.0
+Werkzeug==2.3.7
+
+# Data Processing and Analysis
+pandas==2.1.4
+python-dateutil==2.8.2
+pytz==2023.3
+
+# Excel File Processing
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# Document Processing (Word documents)
+python-docx==0.8.11
+docxtpl==0.16.7
+docxcompose==1.4.0
+lxml==4.9.3
+
+# Image Processing
+Pillow==10.1.0
+
+# String Matching and Fuzzy Search
+jellyfish==1.2.0
+fuzzywuzzy>=0.18.0
+requests>=2.32.0
+
+# Optional: Fast string matching (may fail on free PythonAnywhere accounts)
+# Fallbacks are provided in pythonanywhere_config.py
+python-Levenshtein>=0.27.0
+
+# Note: Some packages may require compilation and might not install on free accounts
+# The application is designed to work with fallback functions when these are missing

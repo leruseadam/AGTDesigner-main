@@ -1,0 +1,29 @@
+{
+  "database_info": {
+    "tables": [
+      "strains",
+      "sqlite_sequence",
+      "products",
+      "lineage_history",
+      "strain_brand_lineage",
+      "sessions"
+    ],
+    "product_count": 0,
+    "size_bytes": 69632,
+    "size_mb": 0.07
+  },
+  "deployment_notes": {
+    "recommended_plan": "Free",
+    "upload_method": "Files tab",
+    "optimization_needed": false
+  },
+  "tables": [
+    "strains",
+    "sqlite_sequence",
+    "products",
+    "lineage_history",
+    "strain_brand_lineage",
+    "sessions"
+  ],
+  "product_count": 0
+}

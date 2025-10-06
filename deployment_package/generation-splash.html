@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Generating Tag Designer - Generating Labels</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* AGT DESIGNER Style Container */
+        #generation-splash-container {
+            position: relative;
+            width: 500px;
+            height: 350px;
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(22, 33, 62, 0.95);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 212, 170, 0.1);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            z-index: 2;
+            transform: translateX(0);
+        }
+        
+        /* Top edge glow effect */
+        #generation-splash-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d4aa, transparent);
+            box-shadow: 0 0 20px rgba(0, 212, 170, 0.6);
+            z-index: 3;
+        }
+        
+        .splash-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            color: white;
+            text-align: center;
+        }
+        
+        /* Top section with loading indicator and version */
+        .top-section {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 4;
+        }
+        
+        .loading-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #cccccc;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .loading-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #cccccc;
+            animation: loading-pulse 1.5s ease-in-out infinite;
+        }
+        
+        .loading-dot:nth-child(1) { animation-delay: 0s; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes loading-pulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+        
+        .version-badge {
+            color: #cccccc;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* Main icon */
+        .main-icon {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .icon-shape {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #00d4aa, #0099cc);
+            border-radius: 12px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 212, 170, 0.3);
+        }
+        
+        .icon-inner {
+            width: 70%;
+            height: 70%;
+            background: linear-gradient(135deg, #ffa500, #ff8c00);
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        /* Main title - using vibrant-title styling */
+        .app-title {
+            color: #fff !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            -webkit-text-fill-color: initial !important;
+            background-clip: initial !important;
+            font-weight: 900;
+            letter-spacing: 3px;
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            text-shadow: 
+                0 4px 12px rgba(0,0,0,0.5),
+                0 6px 20px rgba(0,0,0,0.4),
+                0 2px 4px rgba(160,132,232,0.4),
+                0 0 30px rgba(160,132,232,0.3);
+            filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
+            position: relative;
+            line-height: 1.1;
+            text-align: center !important;
+            width: 100%;
+        }
+        
+        /* Subtitle - using vibrant-subtitle styling */
+        .app-subtitle {
+            color: #fff !important;
+            background: none !important;
+            -webkit-background-clip: initial !important;
+            -webkit-text-fill-color: initial !important;
+            background-clip: initial !important;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-align: center !important;
+            width: 100%;
+            opacity: 1;
+            text-transform: uppercase;
+            text-shadow: 
+                0 3px 8px rgba(0,0,0,0.5),
+                0 4px 16px rgba(0,0,0,0.4),
+                0 2px 4px rgba(139,92,246,0.4),
+                0 0 20px rgba(139,92,246,0.3);
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .copyright-text {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 0.5rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-align: center;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5), 0 1px 2px rgba(160,132,232,0.3);
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        /* Progress bar */
+        .progress-container {
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #00d4aa;
+            border-radius: 2px;
+            animation: progress-animation 3s ease-in-out infinite;
+            position: relative;
+        }
+        
+        @keyframes progress-animation {
+            0% { width: 0%; }
+            50% { width: 70%; }
+            100% { width: 100%; }
+        }
+        
+        /* Loading text */
+        .loading-text {
+            font-size: 12px;
+            color: #cccccc;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+        
+        /* Bottom dots */
+        .bottom-dots {
+            display: flex;
+            gap: 6px;
+            justify-content: center;
+        }
+        
+        .bottom-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00d4aa;
+            animation: bottom-dot-pulse 1.6s ease-in-out infinite both;
+        }
+        
+        .bottom-dot:nth-child(1) { animation-delay: -0.32s; }
+        .bottom-dot:nth-child(2) { animation-delay: -0.16s; }
+        .bottom-dot:nth-child(3) { animation-delay: 0s; }
+        
+        @keyframes bottom-dot-pulse {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.4;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive design */
+        @media (max-width: 600px) {
+            #generation-splash-container {
+                width: 90vw;
+                max-width: 400px;
+                height: 300px;
+            }
+            
+            .app-title {
+                font-size: 2rem;
+            }
+            
+            .app-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .main-icon {
+                width: 50px;
+                height: 50px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="generation-splash-container">
+        <!-- Top section -->
+        <div class="top-section">
+            <div class="loading-indicator">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <span>Loading</span>
+            </div>
+            <div class="version-badge">v2.0.0</div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="splash-content">
+            <!-- Main icon -->
+            <div class="main-icon">
+                <div class="icon-shape">
+                    <div class="icon-inner"></div>
+                </div>
+            </div>
+            
+            <!-- Title -->
+            <h1 class="app-title">AGT DESIGNER</h1>
+            
+            <!-- Subtitle -->
+            <p class="app-subtitle">AUTO-GENERATING TAG DESIGNER</p>
+            
+            <!-- Progress bar -->
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="loading-text">Loading templates...</div>
+            </div>
+            
+            <!-- Copyright text matching title card -->
+            <p class="copyright-text">©2025 Created by Adam Cordova for A Greener Today</p>
+            
+            <!-- Bottom dots -->
+            <div class="bottom-dots">
+                <div class="bottom-dot"></div>
+                <div class="bottom-dot"></div>
+                <div class="bottom-dot"></div>
+            </div>
+            
+            <!-- Exit button -->
+            <button id="exitGenerationBtn" onclick="window.close() || history.back()" style="position: absolute; bottom: 20px; right: 20px; background: rgba(220, 53, 69, 0.8); border: 1px solid rgba(220, 53, 69, 0.8); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);" onmouseover="this.style.background='rgba(220, 53, 69, 1)'; this.style.transform='scale(1.05)'" onmouseout="this.style.background='rgba(220, 53, 69, 0.8)'; this.style.transform='scale(1)'">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 6px; vertical-align: middle;">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Exit
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        // Update loading text based on progress
+        const loadingTexts = [
+            'Loading templates...',
+            'Preparing generation...',
+            'Processing data...',
+            'Generating labels...',
+            'Finalizing output...'
+        ];
+        
+        let textIndex = 0;
+        const loadingTextElement = document.querySelector('.loading-text');
+        
+        function updateLoadingText() {
+            loadingTextElement.style.opacity = '0';
+            setTimeout(() => {
+                loadingTextElement.textContent = loadingTexts[textIndex];
+                loadingTextElement.style.opacity = '1';
+                textIndex = (textIndex + 1) % loadingTexts.length;
+            }, 300);
+        }
+        
+        // Update text every 2 seconds
+        setInterval(updateLoadingText, 2000);
+        
+        // Simulate progress updates
+        let progress = 0;
+        const progressFill = document.querySelector('.progress-fill');
+        
+        function updateProgress() {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            progressFill.style.width = progress + '%';
+            
+            if (progress < 100) {
+                setTimeout(updateProgress, 500 + Math.random() * 1000);
+            }
+        }
+        
+        // Start progress after a short delay
+        setTimeout(updateProgress, 1000);
+    </script>
+</body>
+</html> 

@@ -1,0 +1,21 @@
+# AI-Enhanced Matching Dependencies
+# These packages enable semantic similarity and AI-powered matching
+
+# Core AI/ML packages
+sentence-transformers>=2.2.0
+torch>=1.9.0
+transformers>=4.21.0
+
+# Numerical computing
+numpy>=1.21.0
+scikit-learn>=1.0.0
+
+# Text processing
+spacy>=3.4.0
+nltk>=3.7
+
+# Optional: GPU acceleration (uncomment if you have CUDA)
+# torch-cuda>=1.9.0
+
+# Note: Install with: pip install -r requirements_ai.txt
+# The sentence-transformers package will automatically download the required models

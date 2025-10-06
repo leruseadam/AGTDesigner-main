@@ -1,0 +1,81 @@
+/* Hierarchical Tag Structure Styles */
+.vendor-section {
+    border-left: 2px solid var(--primary-color);
+    padding-left: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.vendor-header {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+}
+
+.brand-section {
+    border-left: 1px solid var(--secondary-color);
+    padding-left: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.brand-header {
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+.product-type-section {
+    margin-bottom: 0.75rem;
+}
+
+.product-type-header {
+    color: var(--accent-color);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+}
+
+.lineage-section {
+    margin-bottom: 0.75rem;
+}
+
+.lineage-header {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.weight-section {
+    margin-bottom: 0.25rem;
+}
+
+.weight-header {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 0.25rem;
+}
+
+.tag-item {
+    border-radius: 3px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.tag-item:hover {
+    transform: translateX(2px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.tag-checkbox {
+    margin-right: 0.5rem;
+    transform: scale(0.9);
+}
+
+.tag-name {
+    font-weight: 500;
+}
+
+.tag-info small {
+    opacity: 0.7;
+    font-size: 0.8rem;
+} 

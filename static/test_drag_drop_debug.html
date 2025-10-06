@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop Debug Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tag-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .tag-item:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .tag-item.dragging {
+            opacity: 0.8;
+            transform: rotate(2deg) scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 172, 254, 0.4);
+        }
+        
+        .drag-handle {
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4facfe;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+            cursor: grab;
+            pointer-events: auto;
+            z-index: 100;
+            background: rgba(79, 172, 254, 0.2);
+            border-radius: 4px;
+            padding: 4px;
+            border: 2px solid #4facfe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .drag-handle:hover {
+            opacity: 1;
+            background: rgba(79, 172, 254, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .tag-content {
+            margin-left: 35px;
+            flex-grow: 1;
+        }
+        
+        .drop-indicator {
+            height: 2px;
+            background: #4facfe;
+            margin: 2px 0;
+            border-radius: 1px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+        
+        .drop-indicator.show {
+            opacity: 1;
+        }
+        
+        .debug-info {
+            background: #e9ecef;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        .test-buttons {
+            margin: 20px 0;
+        }
+        
+        .test-buttons button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        
+        .test-buttons button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Drag and Drop Debug Test</h1>
+        
+        <div class="test-buttons">
+            <button onclick="testDragAndDrop()">Test Drag and Drop</button>
+            <button onclick="forceReinitializeDragAndDrop()">Reinitialize</button>
+            <button onclick="addTestItems()">Add Test Items</button>
+            <button onclick="clearItems()">Clear Items</button>
+        </div>
+        
+        <div class="debug-info" id="debugInfo">
+            Debug info will appear here...
+        </div>
+        
+        <div id="selectedTags">
+            <div class="tag-item">
+                <div class="tag-content">Test Item 1 - This is a test tag item</div>
+            </div>
+            <div class="tag-item">
+                <div class="tag-content">Test Item 2 - Another test item</div>
+            </div>
+            <div class="tag-item">
+                <div class="tag-content">Test Item 3 - Third test item</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/drag-and-drop-manager.js"></script>
+    <script>
+        function updateDebugInfo(message) {
+            const debugInfo = document.getElementById('debugInfo');
+            const timestamp = new Date().toLocaleTimeString();
+            debugInfo.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+            debugInfo.scrollTop = debugInfo.scrollHeight;
+        }
+        
+        function addTestItems() {
+            const container = document.getElementById('selectedTags');
+            const newItem = document.createElement('div');
+            newItem.className = 'tag-item';
+            newItem.innerHTML = '<div class="tag-content">New Test Item - Added dynamically</div>';
+            container.appendChild(newItem);
+            
+            // Reinitialize drag and drop
+            if (window.dragAndDropManager) {
+                window.dragAndDropManager.reinitializeTagDragAndDrop();
+            }
+            
+            updateDebugInfo('Added new test item and reinitialized drag and drop');
+        }
+        
+        function clearItems() {
+            const container = document.getElementById('selectedTags');
+            container.innerHTML = '';
+            updateDebugInfo('Cleared all items');
+        }
+        
+        // Override console.log to also update debug info
+        const originalLog = console.log;
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            updateDebugInfo(args.join(' '));
+        };
+        
+        // Override console.warn and console.error
+        const originalWarn = console.warn;
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            updateDebugInfo('WARNING: ' + args.join(' '));
+        };
+        
+        const originalError = console.error;
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            updateDebugInfo('ERROR: ' + args.join(' '));
+        };
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebugInfo('Page loaded, initializing drag and drop...');
+            
+            // Wait a bit for the drag and drop manager to initialize
+            setTimeout(() => {
+                if (window.dragAndDropManager) {
+                    updateDebugInfo('Drag and drop manager found, testing...');
+                    testDragAndDrop();
+                } else {
+                    updateDebugInfo('ERROR: Drag and drop manager not found');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html> 
