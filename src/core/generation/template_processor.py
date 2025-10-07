@@ -1606,20 +1606,7 @@ class TemplateProcessor:
         product_type = (label_context.get('ProductType', '').lower() or 
                        label_context.get('Product Type*', '').lower())
         
-        if product_type not in classic_types and label_context.get('DescAndWeight'):
-            desc_weight = label_context['DescAndWeight']
-            if desc_weight.endswith(' - '):
-                desc_weight = desc_weight[:-3] + '\n- '
-            elif desc_weight.endswith(' -'):
-                desc_weight = desc_weight[:-2] + '\n- '
-            desc_weight = desc_weight.replace(' - ', '\n- ')
-            label_context['DescAndWeight'] = desc_weight
         
-        # Fast pre-roll processing
-        if product_type in {"pre-roll", "infused pre-roll"} and label_context.get('DescAndWeight'):
-            desc_weight = label_context['DescAndWeight']
-            desc_weight = desc_weight.replace(' - ', '\n- ')
-            label_context['DescAndWeight'] = desc_weight
 
         # Fast weight and ratio formatting
         for key, marker in [('WeightUnits', 'WEIGHTUNITS'), ('Ratio', 'RATIO')]:

@@ -22,8 +22,6 @@ import pandas as pd  # Add this import
 import time
 import re
 import json
-# Startup Performance Optimization
-DISABLE_STARTUP_FILE_LOADING = True  # Disable startup file loading to prevent hangs
 
 # PythonAnywhere Performance Optimization
 PYTHONANYWHERE_OPTIMIZATION = os.environ.get('PYTHONANYWHERE_DOMAIN') is not None
@@ -75,7 +73,7 @@ IS_PRODUCTION = os.environ.get('FLASK_ENV') == 'production' or IS_PYTHONANYWHERE
 
 # OPTIMIZATION: Disable startup file loading for faster app startup
 # Set to False to enable default file loading on startup
-DISABLE_STARTUP_FILE_LOADING = False
+DISABLE_STARTUP_FILE_LOADING = True
 
 # OPTIMIZATION: Enable lazy loading for faster app startup
 # Set to False to load files immediately
@@ -88,8 +86,6 @@ MAX_TOTAL_PROCESSING_TIME = 60  # Reduced from 300 to 60 seconds for server comp
 MAX_CONTENT_LENGTH = 100 * 1024 * 1024  # 100MB max file size
 UPLOAD_CHUNK_SIZE = 16384  # 16KB chunks for uploads
 
-# Add generation timeout protection
-GENERATION_TIMEOUT_SECONDS = 45  # Server-safe timeout for generation
 MAX_SELECTED_TAGS_PER_REQUEST = 100  # Limit tags per request to prevent timeouts
 
 if IS_PRODUCTION:
@@ -469,6 +465,14 @@ def get_excel_processor():
         # Use thread lock to prevent race conditions
         with excel_processor_lock:
             if _excel_processor is None:
+                # MEMORY OPTIMIZATION: If startup file loading is disabled, create minimal processor
+                if DISABLE_STARTUP_FILE_LOADING:
+                    logging.info("MEMORY OPTIMIZATION: Creating minimal Excel processor without data loading")
+                    _excel_processor = ExcelProcessor()
+                    _excel_processor.df = pd.DataFrame()  # Empty DataFrame
+                    _excel_processor.logger.setLevel(logging.WARNING)
+                    logging.info("Created minimal Excel processor with empty DataFrame")
+                    return _excel_processor
                 # Get the current store name from session, with fallback for startup
                 from flask import session
                 try:
@@ -971,8 +975,14 @@ def initialize_excel_processor():
         # Skip initialization if startup file loading is disabled for performance
         if DISABLE_STARTUP_FILE_LOADING:
             logging.info("Startup file loading disabled for faster application startup")
-            excel_processor = get_excel_processor()
-            excel_processor.logger.setLevel(logging.WARNING)
+            # Create a minimal processor without any data loading
+            global _excel_processor
+            if _excel_processor is None:
+                from src.core.data.excel_processor import ExcelProcessor
+                _excel_processor = ExcelProcessor()
+                _excel_processor.df = pd.DataFrame()  # Empty DataFrame
+                _excel_processor.logger.setLevel(logging.WARNING)
+                logging.info("Created minimal Excel processor with empty DataFrame")
             return
         
         excel_processor = get_excel_processor()
@@ -3976,13 +3986,6 @@ def generate_labels():
     import signal
     import threading
     
-    def timeout_handler(signum, frame):
-        raise TimeoutError("Generation request timed out")
-    
-    # Set up timeout protection
-    original_handler = signal.signal(signal.SIGALRM, timeout_handler)
-    signal.alarm(GENERATION_TIMEOUT_SECONDS)
-    
     try:
         logging.info("=== GENERATE LABELS ACTION START ===")
         logging.info(f"Generate labels request at {datetime.now().strftime('%H:%M:%S')}")
@@ -4684,19 +4687,12 @@ def generate_labels():
         
         return response
 
-    except TimeoutError as e:
-        logging.error(f"Generation request timed out after {GENERATION_TIMEOUT_SECONDS} seconds: {str(e)}")
-        return jsonify({'error': f'Generation request timed out after {GENERATION_TIMEOUT_SECONDS} seconds. Please try with fewer tags or contact support.'}), 408
     except Exception as e:
         logging.error(f"Error during label generation: {str(e)}")
         logging.error(traceback.format_exc())
         return jsonify({'error': f'An unexpected error occurred: {str(e)}'}), 500
     
     finally:
-        # Clean up timeout handler
-        signal.alarm(0)  # Cancel the alarm
-        signal.signal(signal.SIGALRM, original_handler)  # Restore original handler
-        
         # Clean up request fingerprint to allow future requests
         if hasattr(generate_labels, '_processing_requests') and 'request_fingerprint' in locals():
             generate_labels._processing_requests.discard(request_fingerprint)

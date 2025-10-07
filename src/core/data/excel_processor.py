@@ -6083,12 +6083,8 @@ class ExcelProcessor:
         # Get weight units, clean them up
         weight = str(weight_units).strip() if weight_units else ''
         if weight and weight.lower() not in ['nan', 'none', 'null', '']:
-            # CRITICAL FIX: For pre-roll products, put hyphen + joint ratio on new line
-            if product_type and str(product_type).lower() in ['pre-roll', 'infused pre-roll']:
-                return f"{product_name}\n-{weight}"
-            else:
-                # Combine product name and weight with hyphen staying with weight (space after hyphen)
-                return f"{product_name} -\u00A0{weight}"
+            # Combine product name and weight with hyphen staying with weight (space after hyphen)
+            return f"{product_name} -\u00A0{weight}"
         else:
             # Just return the product name if no weight
             return product_name
